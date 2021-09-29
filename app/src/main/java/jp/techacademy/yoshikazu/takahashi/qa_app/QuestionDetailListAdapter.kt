@@ -3,12 +3,15 @@ package jp.techacademy.yoshikazu.takahashi.qa_app
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.preference.PreferenceManager
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.list_question_detail.view.*
 
 class QuestionDetailListAdapter(context: Context, private val mQustion: Question) : BaseAdapter() {
@@ -52,7 +55,12 @@ class QuestionDetailListAdapter(context: Context, private val mQustion: Question
 
         if (getItemViewType(position) == TYPE_QUESTION) {
             if (convertView == null) {
-                convertView = mLayoutInflater!!.inflate(R.layout.list_question_detail, parent, false)!!
+                if(FirebaseAuth.getInstance().currentUser != null) {
+                    convertView = mLayoutInflater!!.inflate(R.layout.list_question_detail_logined, parent, false)!!
+                }else {
+                    convertView =
+                        mLayoutInflater!!.inflate(R.layout.list_question_detail, parent, false)!!
+                }
             }
             val body = mQustion.body
             val name = mQustion.name

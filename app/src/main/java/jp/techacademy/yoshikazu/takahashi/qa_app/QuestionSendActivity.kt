@@ -24,6 +24,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.android.synthetic.main.activity_question_send.*
 import java.io.ByteArrayOutputStream
 
@@ -143,7 +144,7 @@ class QuestionSendActivity : AppCompatActivity(), View.OnClickListener {
             val sp = PreferenceManager.getDefaultSharedPreferences(this)
             val name = sp.getString(NameKEY, "")
 
-            var fireStoreQuestion = FireStoreQuestion()
+            var fireStoreQuestion = FirestoreQuestion()
 
             fireStoreQuestion.uid = FirebaseAuth.getInstance().currentUser?.uid ?: ""
             fireStoreQuestion.title = title
@@ -215,16 +216,6 @@ class QuestionSendActivity : AppCompatActivity(), View.OnClickListener {
         chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, arrayOf(cameraIntent))
 
         startActivityForResult(chooserIntent, CHOOSER_REQUEST_CODE)
-    }
-
-    override fun onComplete(databaseError: DatabaseError?, databaseReference: DatabaseReference) {
-        progressBar.visibility = View.GONE
-
-        if (databaseError == null) {
-            finish()
-        } else {
-            Snackbar.make(findViewById(android.R.id.content), getString(R.string.question_send_error_message), Snackbar.LENGTH_LONG).show()
-        }
     }
 
 }
