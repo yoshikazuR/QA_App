@@ -178,6 +178,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             val intent = Intent(applicationContext, SettingActivity::class.java)
             startActivity(intent)
             return true
+        }else if (id == R.id.action_favorite) {
+            val intent = Intent(applicationContext, FavoriteActivity::class.java)
+            startActivity(intent)
+            return true
         }
 
         return super.onOptionsItemSelected(item)

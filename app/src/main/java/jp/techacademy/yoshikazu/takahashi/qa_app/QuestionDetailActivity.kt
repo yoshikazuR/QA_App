@@ -18,8 +18,6 @@ class QuestionDetailActivity : AppCompatActivity() {
     private lateinit var mQuestion: Question
     private lateinit var mAdapter: QuestionDetailListAdapter
     private lateinit var mAnswerRef: DatabaseReference
-    private var isFavorite = false
-    private var titleFFlag = ""
 
     private val mEventListener = object : ChildEventListener {
         override fun onChildAdded(dataSnapshot: DataSnapshot, s: String?) {
@@ -36,30 +34,9 @@ class QuestionDetailActivity : AppCompatActivity() {
             val body = map["body"] as? String ?: ""
             val name = map["name"] as? String ?: ""
             val uid = map["uid"] as? String ?: ""
-            val data = getSharedPreferences("favoriteFlags", Context.MODE_PRIVATE)
-            isFavorite = data.getBoolean(titleFFlag,false)
-
             val answer = Answer(body, name, uid, answerUid)
             mQuestion.answers.add(answer)
             mAdapter.notifyDataSetChanged()
-            if (FirebaseAuth.getInstance().currentUser != null) {
-                favoriteImageView.setImageResource(if (isFavorite) R.drawable.ic_star else R.drawable.ic_star_border)
-                favoriteImageView.setOnClickListener {
-                    Log.d("TEST", "Star")
-                    val edit = data.edit()
-                    if(isFavorite) {
-                        isFavorite = false
-                        edit.putBoolean(titleFFlag,false)
-                        Log.d("TEST", "REMOVE")
-                    }else {
-                        isFavorite = true
-                        edit.putBoolean(titleFFlag,true)
-                        Log.d("TEST", "ADD")
-                    }
-                    edit.commit()
-                    favoriteImageView.setImageResource(if (isFavorite) R.drawable.ic_star else R.drawable.ic_star_border)
-                }
-            }
         }
 
         override fun onChildChanged(dataSnapshot: DataSnapshot, s: String?) {
@@ -88,7 +65,6 @@ class QuestionDetailActivity : AppCompatActivity() {
         mQuestion = extras!!.get("question") as Question
 
         title = mQuestion.title
-        titleFFlag = mQuestion.title
 
         // ListViewの準備
         mAdapter = QuestionDetailListAdapter(this, mQuestion)

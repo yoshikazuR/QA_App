@@ -13,6 +13,7 @@ import android.widget.TextView
 import androidx.preference.PreferenceManager
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.list_question_detail.view.*
+import kotlinx.android.synthetic.main.list_question_detail_logined.*
 
 class QuestionDetailListAdapter(context: Context, private val mQustion: Question) : BaseAdapter() {
     companion object {
@@ -21,6 +22,8 @@ class QuestionDetailListAdapter(context: Context, private val mQustion: Question
     }
 
     private var mLayoutInflater: LayoutInflater? = null
+    private var isFavorite = false
+    private var titleFFlag = ""
 
     init {
         mLayoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
@@ -76,6 +79,30 @@ class QuestionDetailListAdapter(context: Context, private val mQustion: Question
                 val image = BitmapFactory.decodeByteArray(bytes, 0, bytes.size).copy(Bitmap.Config.ARGB_8888, true)
                 val imageView = convertView.findViewById<View>(R.id.imageView) as ImageView
                 imageView.setImageBitmap(image)
+            }
+
+            titleFFlag = mQustion.title
+
+            var context = convertView.context
+
+            val data = context.getSharedPreferences("favoriteFlags", Context.MODE_PRIVATE)
+            isFavorite = data.getBoolean(mQustion.uid+"/"+titleFFlag,false)
+
+            if (FirebaseAuth.getInstance().currentUser != null) {
+                var favoriteImageView = convertView.findViewById<ImageView>(R.id.favoriteImageView)
+                favoriteImageView.setImageResource(if (isFavorite) R.drawable.ic_star else R.drawable.ic_star_border)
+                favoriteImageView.setOnClickListener {
+                    val edit = data.edit()
+                    if(isFavorite) {
+                        isFavorite = false
+                        edit.putBoolean(mQustion.uid+"/"+titleFFlag,false)
+                    }else {
+                        isFavorite = true
+                        edit.putBoolean(mQustion.uid+"/"+titleFFlag,true)
+                    }
+                    edit.commit()
+                    favoriteImageView.setImageResource(if (isFavorite) R.drawable.ic_star else R.drawable.ic_star_border)
+                }
             }
         } else {
             if (convertView == null) {
